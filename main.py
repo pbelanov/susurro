@@ -9,8 +9,9 @@ def main():
     whisper_model = "small.en"
     project_name = "whisper-test2"
     audio_extension = ".m4a"
-    audio_file = project_name + audio_extension
-    transcript_file = project_name + ".txt"
+    data_folder = "data/"
+    audio_file = data_folder + project_name + audio_extension
+    transcript_file = data_folder + project_name + ".txt"
 
     # Instantiate the speech recognition model
     model = whisper.load_model(whisper_model)

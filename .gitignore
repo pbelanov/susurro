@@ -6,7 +6,8 @@ dist/
 wheels/
 *.egg-info
 
-# Sound files
+# Data files
+data/
 *.mp3
 *.wav
 

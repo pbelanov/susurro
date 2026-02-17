@@ -1,3 +1,6 @@
+import argparse
+from pathlib import Path
+
 import whisper
 
 
@@ -6,19 +9,19 @@ def main():
     Transcribe a simple audio file to text.
     """
 
-    # Parameters
-    whisper_model = "small.en"
-    project_name = "whisper-test2"
-    audio_extension = ".m4a"
-    data_folder = "data/"
-    audio_file = data_folder + project_name + audio_extension
-    transcript_file = data_folder + project_name + ".txt"
+    parser = argparse.ArgumentParser(description="Transcribe an audio file to text using Whisper.")
+    parser.add_argument("audio_file", type=Path, help="Path to the audio file to transcribe")
+    parser.add_argument("--model", default="small.en", help="Whisper model to use (default: small.en)")
+    parser.add_argument("--output", type=Path, help="Output text file (default: same name as audio with .txt extension)")
+    args = parser.parse_args()
+
+    transcript_file = args.output or args.audio_file.with_suffix(".txt")
 
     # Instantiate the speech recognition model
-    model = whisper.load_model(whisper_model)
+    model = whisper.load_model(args.model)
 
     # Transcribe
-    result = model.transcribe(audio_file)
+    result = model.transcribe(str(args.audio_file))
 
     # Output the result
     with open(transcript_file, "w") as f:

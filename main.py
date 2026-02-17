@@ -15,7 +15,18 @@ def main():
     parser.add_argument("--output", type=Path, help="Output text file (default: same name as audio with .txt extension)")
     args = parser.parse_args()
 
+    if not args.audio_file.exists():
+        parser.error(f"Audio file not found: {args.audio_file}")
+
+    available_models = whisper.available_models()
+    if args.model not in available_models:
+        parser.error(f"Unknown model '{args.model}'. Available: {', '.join(available_models)}")
+
     transcript_file = args.output or args.audio_file.with_suffix(".txt")
+
+    output_dir = transcript_file.parent
+    if not output_dir.is_dir():
+        parser.error(f"Output directory does not exist: {output_dir}")
 
     # Instantiate the speech recognition model
     model = whisper.load_model(args.model)

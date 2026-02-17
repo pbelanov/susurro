@@ -4,6 +4,12 @@ from pathlib import Path
 import whisper
 
 
+def format_timestamp(seconds: float) -> str:
+    minutes = int(seconds) // 60
+    secs = int(seconds) % 60
+    return f"{minutes:02d}:{secs:02d}"
+
+
 def main():
     """
     Transcribe an audio file to text using Whisper
@@ -13,6 +19,7 @@ def main():
     parser.add_argument("audio_file", type=Path, help="Path to the audio file to transcribe")
     parser.add_argument("--model", default="small.en", help="Whisper model to use (default: small.en)")
     parser.add_argument("--output", type=Path, help="Output text file (default: same name as audio with .txt extension)")
+    parser.add_argument("--timestamps", action=argparse.BooleanOptionalAction, default=True, help="Include segment timestamps in output (default: True)")
     args = parser.parse_args()
 
     if not args.audio_file.exists():
@@ -36,7 +43,14 @@ def main():
 
     # Output the result
     with open(transcript_file, "w") as f:
-        f.write(result["text"])
+        if args.timestamps:
+            for segment in result["segments"]:
+                start = format_timestamp(segment["start"])
+                end = format_timestamp(segment["end"])
+                text = segment["text"].strip()
+                f.write(f"[{start} - {end}] {text}\n")
+        else:
+            f.write(result["text"])
 
 if __name__ == "__main__":
     main()

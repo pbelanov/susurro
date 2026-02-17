@@ -18,6 +18,10 @@ def main():
     if not args.audio_file.exists():
         parser.error(f"Audio file not found: {args.audio_file}")
 
+    available_models = whisper.available_models()
+    if args.model not in available_models:
+        parser.error(f"Unknown model '{args.model}'. Available: {', '.join(available_models)}")
+
     transcript_file = args.output or args.audio_file.with_suffix(".txt")
 
     # Instantiate the speech recognition model

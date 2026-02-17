@@ -6,7 +6,7 @@ import whisper
 
 def main():
     """
-    Transcribe a simple audio file to text.
+    Transcribe an audio file to text using Whisper
     """
 
     parser = argparse.ArgumentParser(description="Transcribe an audio file to text using Whisper.")

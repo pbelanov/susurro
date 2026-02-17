@@ -1,7 +1,7 @@
 [project]
 name = "susurro"
 version = "0.1.0"
-description = "Add your description here"
+description = "Transcribe an audio file to text using Whisper."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

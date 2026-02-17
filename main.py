@@ -1,9 +1,10 @@
+import whisper
+
+
 def main():
     """
     Transcribe a simple audio file to text.
     """
-
-    import whisper
 
     # Parameters
     whisper_model = "small.en"

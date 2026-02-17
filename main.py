@@ -15,6 +15,9 @@ def main():
     parser.add_argument("--output", type=Path, help="Output text file (default: same name as audio with .txt extension)")
     args = parser.parse_args()
 
+    if not args.audio_file.exists():
+        parser.error(f"Audio file not found: {args.audio_file}")
+
     transcript_file = args.output or args.audio_file.with_suffix(".txt")
 
     # Instantiate the speech recognition model

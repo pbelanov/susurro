@@ -24,6 +24,10 @@ def main():
 
     transcript_file = args.output or args.audio_file.with_suffix(".txt")
 
+    output_dir = transcript_file.parent
+    if not output_dir.is_dir():
+        parser.error(f"Output directory does not exist: {output_dir}")
+
     # Instantiate the speech recognition model
     model = whisper.load_model(args.model)
 

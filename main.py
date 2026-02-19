@@ -19,7 +19,7 @@ def main():
     parser.add_argument("audio_file", type=Path, help="Path to the audio file to transcribe")
     parser.add_argument("--model", default="small", help="Whisper model to use (default: small)")
     parser.add_argument("--output", type=Path, help="Output text file (default: same name as audio with .txt extension)")
-    parser.add_argument("--timestamps", action=argparse.BooleanOptionalAction, default=True, help="Include segment timestamps in output (default: True)")
+    parser.add_argument("--timestamps", action=argparse.BooleanOptionalAction, default=False, help="Include segment timestamps in output (default: False)")
     parser.add_argument("--translate", action="store_true", help="Translate to English instead of transcribing")
     args = parser.parse_args()
 

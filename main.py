@@ -1,6 +1,8 @@
 import argparse
 from pathlib import Path
 
+from faster_whisper import WhisperModel
+
 
 def format_timestamp(seconds: float) -> str:
     minutes = int(seconds) // 60
@@ -10,7 +12,7 @@ def format_timestamp(seconds: float) -> str:
 
 def main():
     """
-    Transcribe (or translate) an audio file to text using faster-whisper or whisper
+    Transcribe (or translate) an audio file to text using faster-whisper
     """
 
     parser = argparse.ArgumentParser(description="Transcribe an audio file to text using Whisper.")
@@ -19,7 +21,6 @@ def main():
     parser.add_argument("--output", type=Path, help="Output text file (default: same name as audio with .txt extension)")
     parser.add_argument("--timestamps", action=argparse.BooleanOptionalAction, default=False, help="Include segment timestamps in output (default: False)")
     parser.add_argument("--translate", action="store_true", help="Translate to English instead of transcribing")
-    parser.add_argument("--backend", choices=["faster-whisper", "whisper"], default="faster-whisper", help="Backend to use (default: faster-whisper)")
     args = parser.parse_args()
 
     if not args.audio_file.exists():
@@ -33,42 +34,22 @@ def main():
 
     task = "translate" if args.translate else "transcribe"
 
-    if args.backend == "faster-whisper":
-        from faster_whisper import WhisperModel
+    # Instantiate the speech recognition model (CPU, int8 for efficiency)
+    model = WhisperModel(args.model, device="cpu", compute_type="int8")
 
-        # Instantiate the speech recognition model (CPU, int8 for efficiency)
-        model = WhisperModel(args.model, device="cpu", compute_type="int8")
+    # Transcribe / translate
+    segments, info = model.transcribe(str(args.audio_file), task=task)
 
-        # Transcribe / translate
-        segments, info = model.transcribe(str(args.audio_file), task=task)
+    print(f"Detected language: {info.language} (probability: {info.language_probability:.2f})")
 
-        print(f"Detected language: {info.language} (probability: {info.language_probability:.2f})")
-
-        with open(transcript_file, "w") as f:
-            if args.timestamps:
-                for segment in segments:
-                    start = format_timestamp(segment.start)
-                    end = format_timestamp(segment.end)
-                    f.write(f"[{start} - {end}] {segment.text.strip()}\n")
-            else:
-                f.write(" ".join(segment.text.strip() for segment in segments))
-
-    else:  # whisper
-        import whisper
-
-        model = whisper.load_model(args.model)
-        result = model.transcribe(str(args.audio_file), task=task)
-
-        print(f"Detected language: {result['language']}")
-
-        with open(transcript_file, "w") as f:
-            if args.timestamps:
-                for segment in result["segments"]:
-                    start = format_timestamp(segment["start"])
-                    end = format_timestamp(segment["end"])
-                    f.write(f"[{start} - {end}] {segment['text'].strip()}\n")
-            else:
-                f.write(result["text"])
+    with open(transcript_file, "w") as f:
+        if args.timestamps:
+            for segment in segments:
+                start = format_timestamp(segment.start)
+                end = format_timestamp(segment.end)
+                f.write(f"[{start} - {end}] {segment.text.strip()}\n")
+        else:
+            f.write(" ".join(segment.text.strip() for segment in segments))
 
     print(f"Output written to: {transcript_file}")
 

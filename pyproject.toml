@@ -3,7 +3,7 @@ name = "susurro"
 version = "0.1.0"
 description = "Transcribe an audio file to text using Whisper."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
-    "openai-whisper>=20250625",
+    "faster-whisper>=1.1.1",
 ]

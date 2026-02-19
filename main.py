@@ -45,19 +45,21 @@ def main():
         print(f"Detected language: {info.language} (probability: {info.language_probability:.2f})")
 
         with open(transcript_file, "w") as f:
-            for segment in segments:
-                if args.timestamps:
+            if args.timestamps:
+                for segment in segments:
                     start = format_timestamp(segment.start)
                     end = format_timestamp(segment.end)
                     f.write(f"[{start} - {end}] {segment.text.strip()}\n")
-                else:
-                    f.write(segment.text.strip() + "\n")
+            else:
+                f.write(" ".join(segment.text.strip() for segment in segments))
 
     else:  # whisper
         import whisper
 
         model = whisper.load_model(args.model)
         result = model.transcribe(str(args.audio_file), task=task)
+
+        print(f"Detected language: {result['language']}")
 
         with open(transcript_file, "w") as f:
             if args.timestamps:
